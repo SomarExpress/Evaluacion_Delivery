@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evalúa tu Servicio de Delivery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+            text-align: center;
+        }
+
+        .order-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .order-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .rating-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .star {
+            font-size: 45px;
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffd700;
+            transform: scale(1.2);
+        }
+
+        .rating-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            min-height: 20px;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #666;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🛵 Evalúa tu Servicio</h1>
+            <p>Tu opinión nos ayuda a mejorar</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="order-info" id="orderInfo">
+            <h3>📦 Pedido</h3>
+            <div class="order-number" id="displayOrder">-</div>
+        </div>
+
+        <form id="ratingForm">
+            <div class="form-group">
+                <label>¿Cómo calificarías el servicio? <span class="required">*</span></label>
+                <div class="rating-container" id="ratingStars">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <div class="rating-text" id="ratingText"></div>
+                <input type="hidden" id="rating" required>
+            </div>
+
+            <div class="form-group">
+                <label>Comentarios (Opcional)</label>
+                <textarea id="comments" placeholder="Cuéntanos sobre tu experiencia con el servicio..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Enviar Evaluación</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #666;">Enviando tu evaluación...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <h2>¡Gracias por tu evaluación!</h2>
+            <p>Tu opinión nos ayuda a mejorar nuestro servicio</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 0;
+        let numeroPedido = '';
+        
+        // Obtener número de pedido de la URL
+        function getOrderNumber() {
+            const params = new URLSearchParams(window.location.search);
+            // Acepta 'pedido' o 'p' como parámetro
+            return params.get('pedido') || params.get('p');
+        }
+        
+        // Validar y mostrar información del pedido
+        function initializeForm() {
+            numeroPedido = getOrderNumber();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!numeroPedido) {
+                errorMessage.textContent = '❌ Link inválido. Falta el número de pedido.';
+                errorMessage.classList.add('show');
+                document.getElementById('ratingForm').style.display = 'none';
+                document.getElementById('orderInfo').style.display = 'none';
+                return false;
+            }
+            
+            // Mostrar número de pedido
+            document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+            
+            return true;
+        }
+        
+        // Textos descriptivos para cada calificación
+        const ratingTexts = {
+            1: '😞 Muy insatisfecho',
+            2: '😕 Insatisfecho',
+            3: '😐 Regular',
+            4: '😊 Satisfecho',
+            5: '🤩 ¡Excelente!'
+        };
+        
+        // Sistema de estrellas
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        const ratingText = document.getElementById('ratingText');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                ratingInput.value = selectedRating;
+                updateStars(selectedRating);
+                ratingText.textContent = ratingTexts[selectedRating];
+            });
+            
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.dataset.rating);
+                updateStars(rating);
+                ratingText.textContent = ratingTexts[rating];
+            });
+        });
+        
+        document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+            updateStars(selectedRating);
+            ratingText.textContent = selectedRating ? ratingTexts[selectedRating] : '';
+        });
+        
+        function updateStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // Manejo del formulario
+        document.getElementById('ratingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+            
+            if (selectedRating === 0) {
+                errorMessage.textContent = '⭐ Por favor selecciona una calificación';
+                errorMessage.classList.add('show');
+                return;
+            }
+            
+            const formData = {
+                numeroPedido: numeroPedido,
+                calificacion: selectedRating,
+                comentarios: document.getElementById('comments').value || 'Sin comentarios',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Mostrar loading
+            document.getElementById('ratingForm').style.display = 'none';
+            document.getElementById('orderInfo').style.display = 'none';
+            document.getElementById('loading').classList.add('show');
+            
+            try {
+                // IMPORTANTE: Reemplaza esta URL con tu URL de Google Apps Script
+                const response = await fetch('TU_URL_DE_APPS_SCRIPT_AQUI', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                // Simular espera (porque no-cors no devuelve respuesta)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Mostrar mensaje de éxito
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('successMessage').classList.add('show');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.remove('show');
+                errorMessage.textContent = '❌ Hubo un error al enviar tu evaluación. Por favor intenta de nuevo.';
+                errorMessage.classList.add('show');
+                document.getElementById('ratingForm').style.display = 'block';
+                document.getElementById('orderInfo').style.display = 'block';
+            }
+        });
+        
+        // Inicializar el formulario al cargar la página
+        window.addEventListener('DOMContentLoaded', initializeForm);
+    </script>
+</body>
+</html>
