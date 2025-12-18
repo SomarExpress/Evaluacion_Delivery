@@ -315,7 +315,7 @@
         }
         
         // Validar y mostrar información del pedido
-        function initializeForm() {
+        async function initializeForm() {
             numeroPedido = getOrderNumber();
             const errorMessage = document.getElementById('errorMessage');
             
@@ -327,10 +327,44 @@
                 return false;
             }
             
-            // Mostrar número de pedido
-            document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+            // Mostrar loading mientras verifica
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('ratingForm').style.display = 'none';
+            document.getElementById('orderInfo').style.display = 'none';
             
-            return true;
+            // Verificar si el pedido ya fue evaluado
+            try {
+                // IMPORTANTE: Usa la misma URL de tu Apps Script
+                const response = await fetch('https://script.google.com/macros/s/AKfycbx7hZnPOU5NyCHeZkjb7kJfq66IDONAtMsrEnMvrGl8dxPr56OJb1ry_tp3Wd-CT23ctg/exec?pedido=' + numeroPedido);
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.yaEvaluado) {
+                    // El pedido ya fue evaluado
+                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong><br><br>Gracias por tu tiempo. Cada pedido solo puede ser evaluado una vez.';
+                    errorMessage.style.background = '#d1ecf1';
+                    errorMessage.style.color = '#0c5460';
+                    errorMessage.classList.add('show');
+                    return false;
+                }
+                
+                // El pedido no ha sido evaluado, mostrar formulario
+                document.getElementById('orderInfo').style.display = 'block';
+                document.getElementById('ratingForm').style.display = 'block';
+                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+                return true;
+                
+            } catch (error) {
+                console.error('Error al verificar pedido:', error);
+                document.getElementById('loading').classList.remove('show');
+                
+                // Si hay error en la verificación, permitir continuar (para no bloquear el servicio)
+                document.getElementById('orderInfo').style.display = 'block';
+                document.getElementById('ratingForm').style.display = 'block';
+                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+                return true;
+            }
         }
         
         // Textos descriptivos para cada calificación
@@ -416,7 +450,7 @@
             
             try {
                 // IMPORTANTE: Reemplaza esta URL con tu URL de Google Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwtiZEx98mjz6cmCGh-oaglG_HUHKUJI3cXr1uCvJwyzTmcePPWPGajRDwIU-bk3rlMbA/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbx7hZnPOU5NyCHeZkjb7kJfq66IDONAtMsrEnMvrGl8dxPr56OJb1ry_tp3Wd-CT23ctg/exec', {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
@@ -435,7 +469,15 @@
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('loading').classList.remove('show');
-                errorMessage.textContent = '❌ Hubo un error al enviar tu evaluación. Por favor intenta de nuevo.';
+                
+                // Verificar si el error es porque ya fue evaluado
+                if (error.message && error.message.includes('ya ha sido evaluado')) {
+                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong><br><br>Gracias por tu tiempo.';
+                    errorMessage.style.background = '#d1ecf1';
+                    errorMessage.style.color = '#0c5460';
+                } else {
+                    errorMessage.textContent = '❌ Hubo un error al enviar tu evaluación. Por favor intenta de nuevo.';
+                }
                 errorMessage.classList.add('show');
                 document.getElementById('ratingForm').style.display = 'block';
                 document.getElementById('orderInfo').style.display = 'block';
