@@ -336,7 +336,7 @@
             // Verificar si el pedido ya fue evaluado
             try {
                 // IMPORTANTE: Reemplaza esta URL con tu URL de Google Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwYnSDem5-bFsZsEkLJv-mGDI2PkQCeN7P7ecSUfSwhNhP4IciNBob9g3rI5pFNUzSfGA/exec?pedido=' + numeroPedido);
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzo_oTACVQMknT4XQv5KjMcxUUZDRNsohiiZB3f9Zl0GsugUEWX5BTzsXostOYGUQVtsw/exec?pedido=' + numeroPedido);
                 const data = await response.json();
                 
                 document.getElementById('loading').classList.remove('show');
@@ -453,7 +453,7 @@
             
             try {
                 // IMPORTANTE: Reemplaza esta URL con tu URL de Google Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwYnSDem5-bFsZsEkLJv-mGDI2PkQCeN7P7ecSUfSwhNhP4IciNBob9g3rI5pFNUzSfGA/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzo_oTACVQMknT4XQv5KjMcxUUZDRNsohiiZB3f9Zl0GsugUEWX5BTzsXostOYGUQVtsw/exec', {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
