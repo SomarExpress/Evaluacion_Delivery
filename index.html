@@ -335,7 +335,7 @@
             // Verificar si el pedido ya fue evaluado
             try {
                 // IMPORTANTE: Usa la misma URL de tu Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbx7hZnPOU5NyCHeZkjb7kJfq66IDONAtMsrEnMvrGl8dxPr56OJb1ry_tp3Wd-CT23ctg/exec?pedido=' + numeroPedido);
+                const response = await fetch('https://script.google.com/macros/s/AKfycbx7hZnPOU5NyCHeZkjb7kJfq66IDONAtMsrEnMvrGl8dxPr56OJb1ry_tp3Wd-CT23ctg/exec?p=' + numeroPedido);
                 const data = await response.json();
                 
                 document.getElementById('loading').classList.remove('show');
