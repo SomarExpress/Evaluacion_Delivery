@@ -15,18 +15,16 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
         .container {
             background: white;
             border-radius: 20px;
-            padding: 40px;
-            max-width: 500px;
+            padding: 30px;
+            max-width: 600px;
             width: 100%;
+            margin: 0 auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
@@ -37,14 +35,14 @@
 
         .logo h1 {
             color: #ff6b35;
-            font-size: 32px;
+            font-size: 28px;
             margin-bottom: 5px;
             font-weight: 700;
         }
 
         .logo .tagline {
             color: #1a1a1a;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: 0.5px;
@@ -52,33 +50,50 @@
 
         .logo p {
             color: #666;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .order-info {
             background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            margin-top: 25px;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            margin-top: 20px;
             border-left: 4px solid #ff6b35;
             text-align: center;
         }
 
         .order-info h3 {
             color: #1a1a1a;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
 
         .order-number {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: bold;
             color: #ff6b35;
         }
 
+        .section {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .section h2 {
+            color: #1a1a1a;
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -86,7 +101,7 @@
             margin-bottom: 10px;
             color: #1a1a1a;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .required {
@@ -101,6 +116,8 @@
             font-size: 14px;
             transition: border-color 0.3s;
             font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
         }
 
         textarea:focus {
@@ -108,20 +125,15 @@
             border-color: #ff6b35;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
         .rating-container {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .star {
-            font-size: 45px;
+            font-size: 40px;
             cursor: pointer;
             color: #ddd;
             transition: all 0.2s;
@@ -130,16 +142,131 @@
         .star:hover,
         .star.active {
             color: #ff6b35;
-            transform: scale(1.2);
+            transform: scale(1.15);
         }
 
         .rating-text {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 8px;
             color: #666;
-            font-size: 14px;
-            min-height: 20px;
+            font-size: 13px;
+            min-height: 18px;
             font-weight: 600;
+        }
+
+        .tags-container {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tags-container.show {
+            display: flex;
+        }
+
+        .tag {
+            padding: 10px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tag:hover {
+            border-color: #ff6b35;
+            transform: translateY(-2px);
+        }
+
+        .tag.selected {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            border-color: #ff6b35;
+            transform: translateX(5px);
+        }
+
+        .radio-option.selected {
+            background: #fff5f0;
+            border-color: #ff6b35;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #ff6b35;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .nps-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .nps-button {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nps-button:hover {
+            border-color: #ff6b35;
+            transform: scale(1.1);
+        }
+
+        .nps-button.selected {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .nps-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #999;
         }
 
         .submit-btn {
@@ -153,6 +280,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
         }
 
         .submit-btn:hover:not(:disabled) {
@@ -160,14 +288,9 @@
             box-shadow: 0 10px 20px rgba(255, 107, 53, 0.4);
         }
 
-        .submit-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
         .submit-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
-            transform: none;
             opacity: 0.6;
         }
 
@@ -239,14 +362,26 @@
 
         .footer {
             text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 2px solid #f0f0f0;
         }
 
         .footer p {
             color: #999;
-            font-size: 12px;
+            font-size: 11px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .nps-button {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -260,28 +395,100 @@
 
         <div class="error-message" id="errorMessage"></div>
 
-        <div class="order-info" id="orderInfo">
+        <div class="order-info" id="orderInfo" style="display: none;">
             <h3>📦 Pedido</h3>
             <div class="order-number" id="displayOrder">-</div>
         </div>
 
-        <form id="ratingForm">
-            <div class="form-group">
-                <label>¿Cómo calificarías el servicio del delivery? <span class="required">*</span></label>
-                <div class="rating-container" id="ratingStars">
-                    <span class="star" data-rating="1">★</span>
-                    <span class="star" data-rating="2">★</span>
-                    <span class="star" data-rating="3">★</span>
-                    <span class="star" data-rating="4">★</span>
-                    <span class="star" data-rating="5">★</span>
+        <form id="ratingForm" style="display: none;">
+            
+            <!-- SECCIÓN A: Evaluación del Delivery -->
+            <div class="section">
+                <h2>👨‍🚀 Evaluación del Motorista</h2>
+                
+                <div class="form-group">
+                    <label>¿Cómo calificarías al delivery? <span class="required">*</span></label>
+                    <div class="rating-container" id="ratingStars">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <div class="rating-text" id="ratingText"></div>
+                    <input type="hidden" id="rating" required>
                 </div>
-                <div class="rating-text" id="ratingText"></div>
-                <input type="hidden" id="rating" required>
+
+                <div class="tags-container" id="tagsContainer"></div>
+            </div>
+
+            <!-- SECCIÓN B: Evaluación de la Empresa -->
+            <div class="section">
+                <h2>🏢 Evaluación de Somar Express</h2>
+                
+                <div class="form-group">
+                    <label>¿Qué tan fácil fue pedir por WhatsApp? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option" data-value="Facilísimo">
+                            <input type="radio" id="whatsapp1" name="whatsapp" value="Facilísimo" required>
+                            <label for="whatsapp1">😊 Facilísimo</label>
+                        </div>
+                        <div class="radio-option" data-value="Normal">
+                            <input type="radio" id="whatsapp2" name="whatsapp" value="Normal">
+                            <label for="whatsapp2">😐 Normal</label>
+                        </div>
+                        <div class="radio-option" data-value="Complicado">
+                            <input type="radio" id="whatsapp3" name="whatsapp" value="Complicado">
+                            <label for="whatsapp3">😕 Complicado</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>¿Se cumplió el tiempo de entrega prometido? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option" data-value="Sí">
+                            <input type="radio" id="tiempo1" name="tiempo" value="Sí" required>
+                            <label for="tiempo1">✅ Sí, a tiempo</label>
+                        </div>
+                        <div class="radio-option" data-value="No">
+                            <input type="radio" id="tiempo2" name="tiempo" value="No">
+                            <label for="tiempo2">⏰ No, tardó más</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN C: NPS -->
+            <div class="section">
+                <h2>💙 Recomendación</h2>
+                
+                <div class="form-group">
+                    <label>¿Nos recomendarías a un amigo? <span class="required">*</span></label>
+                    <div class="nps-container" id="npsContainer">
+                        <button type="button" class="nps-button" data-nps="0">0</button>
+                        <button type="button" class="nps-button" data-nps="1">1</button>
+                        <button type="button" class="nps-button" data-nps="2">2</button>
+                        <button type="button" class="nps-button" data-nps="3">3</button>
+                        <button type="button" class="nps-button" data-nps="4">4</button>
+                        <button type="button" class="nps-button" data-nps="5">5</button>
+                        <button type="button" class="nps-button" data-nps="6">6</button>
+                        <button type="button" class="nps-button" data-nps="7">7</button>
+                        <button type="button" class="nps-button" data-nps="8">8</button>
+                        <button type="button" class="nps-button" data-nps="9">9</button>
+                        <button type="button" class="nps-button" data-nps="10">10</button>
+                    </div>
+                    <div class="nps-labels">
+                        <span>Nada probable</span>
+                        <span>Muy probable</span>
+                    </div>
+                    <input type="hidden" id="npsScore" required>
+                </div>
             </div>
 
             <div class="form-group">
                 <label>Comentarios generales (Opcional)</label>
-                <textarea id="comments" placeholder="Cuéntanos tu experiencia general con el servicio: tiempo de entrega, trato del delivery, estado del pedido, etc."></textarea>
+                <textarea id="comments" placeholder="¿Algo más que quieras contarnos?"></textarea>
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn" disabled>Enviar Evaluación</button>
@@ -289,7 +496,7 @@
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 15px; color: #666;">Enviando tu evaluación...</p>
+            <p style="margin-top: 15px; color: #666;">Verificando pedido...</p>
         </div>
 
         <div class="success-message" id="successMessage">
@@ -303,71 +510,16 @@
         </div>
     </div>
 
-<script>
+    <script>
         let selectedRating = 0;
+        let selectedTags = [];
+        let selectedNPS = null;
         let numeroPedido = '';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhzR70QDCRRUWsUdADkksVXzFn1U0tfoMdBBjRCrmmPcCTMa7gXvDaYGsuUL-Y40u2SA/exec';
         
-        // Obtener número de pedido de la URL
-        function getOrderNumber() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('pedido') || params.get('p');
-        }
+        const positiveTags = ['⚡ Muy Rápido', '🤝 Muy Amable', '😷 Buena Presentación', '📦 Cuidó mi paquete'];
+        const negativeTags = ['🐢 Llegó tarde', '😡 Mala actitud', '💸 No tenía cambio', '🍔 Comida dañada'];
         
-        // Validar y mostrar información del pedido
-        async function initializeForm() {
-            numeroPedido = getOrderNumber();
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (!numeroPedido) {
-                errorMessage.textContent = '❌ Link inválido. Falta el número de pedido.';
-                errorMessage.classList.add('show');
-                document.getElementById('ratingForm').style.display = 'none';
-                document.getElementById('orderInfo').style.display = 'none';
-                return false;
-            }
-            
-            // Mostrar loading mientras verifica
-            document.getElementById('loading').classList.add('show');
-            document.getElementById('loading').querySelector('p').textContent = 'Verificando pedido...';
-            document.getElementById('ratingForm').style.display = 'none';
-            document.getElementById('orderInfo').style.display = 'none';
-            
-            // Verificar si el pedido ya fue evaluado
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbyhzR70QDCRRUWsUdADkksVXzFn1U0tfoMdBBjRCrmmPcCTMa7gXvDaYGsuUL-Y40u2SA/exec?pedido=' + numeroPedido);
-                const data = await response.json();
-                
-                document.getElementById('loading').classList.remove('show');
-                
-                if (data.yaEvaluado) {
-                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong><br><br>Gracias por tu tiempo. Cada pedido solo puede ser evaluado una vez.';
-                    errorMessage.style.background = '#d1ecf1';
-                    errorMessage.style.color = '#0c5460';
-                    errorMessage.classList.add('show');
-                    return false;
-                }
-                
-                // El pedido no ha sido evaluado, mostrar formulario
-                document.getElementById('orderInfo').style.display = 'block';
-                document.getElementById('ratingForm').style.display = 'block';
-                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
-                document.getElementById('loading').querySelector('p').textContent = 'Enviando tu evaluación...';
-                return true;
-                
-            } catch (error) {
-                console.error('Error al verificar pedido:', error);
-                document.getElementById('loading').classList.remove('show');
-                
-                // Si hay error en la verificación, permitir continuar
-                document.getElementById('orderInfo').style.display = 'block';
-                document.getElementById('ratingForm').style.display = 'block';
-                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
-                document.getElementById('loading').querySelector('p').textContent = 'Enviando tu evaluación...';
-                return true;
-            }
-        }
-        
-        // Textos descriptivos para cada calificación
         const ratingTexts = {
             1: '😞 Muy insatisfecho',
             2: '😕 Insatisfecho',
@@ -376,86 +528,170 @@
             5: '🤩 ¡Excelente!'
         };
         
-        // Sistema de estrellas
-        const stars = document.querySelectorAll('.star');
-        const ratingInput = document.getElementById('rating');
-        const ratingText = document.getElementById('ratingText');
-        const submitBtn = document.getElementById('submitBtn');
+        function getOrderNumber() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('pedido') || params.get('p');
+        }
         
-        // Función para habilitar/deshabilitar el botón de envío
-        function updateSubmitButton() {
-            if (selectedRating > 0) {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
+        async function initializeForm() {
+            numeroPedido = getOrderNumber();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!numeroPedido) {
+                errorMessage.textContent = '❌ Link inválido. Falta el número de pedido.';
+                errorMessage.classList.add('show');
+                return false;
+            }
+            
+            document.getElementById('loading').classList.add('show');
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                
+                const response = await fetch(APPS_SCRIPT_URL + '?pedido=' + numeroPedido, {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.remove('show');
+                
+                if (data.yaEvaluado) {
+                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong><br><br>Gracias por tu tiempo.';
+                    errorMessage.style.background = '#d1ecf1';
+                    errorMessage.style.color = '#0c5460';
+                    errorMessage.classList.add('show');
+                    return false;
+                }
+                
+                document.getElementById('orderInfo').style.display = 'block';
+                document.getElementById('ratingForm').style.display = 'block';
+                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+                return true;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('orderInfo').style.display = 'block';
+                document.getElementById('ratingForm').style.display = 'block';
+                document.getElementById('displayOrder').textContent = '#' + numeroPedido;
+                return true;
             }
         }
         
-        stars.forEach(star => {
+        function updateStars(rating) {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                star.classList.toggle('active', index < rating);
+            });
+        }
+        
+        function showTags(rating) {
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            selectedTags = [];
+            
+            const tags = rating === 5 ? positiveTags : negativeTags;
+            
+            tags.forEach(tag => {
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag';
+                tagEl.textContent = tag;
+                tagEl.onclick = () => toggleTag(tagEl, tag);
+                tagsContainer.appendChild(tagEl);
+            });
+            
+            tagsContainer.classList.add('show');
+        }
+        
+        function toggleTag(element, tag) {
+            element.classList.toggle('selected');
+            const index = selectedTags.indexOf(tag);
+            if (index > -1) {
+                selectedTags.splice(index, 1);
+            } else {
+                selectedTags.push(tag);
+            }
+        }
+        
+        function updateSubmitButton() {
+            const whatsappSelected = document.querySelector('input[name="whatsapp"]:checked');
+            const tiempoSelected = document.querySelector('input[name="tiempo"]:checked');
+            const btn = document.getElementById('submitBtn');
+            
+            btn.disabled = !(selectedRating > 0 && whatsappSelected && tiempoSelected && selectedNPS !== null);
+        }
+        
+        // Estrellas
+        document.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', function() {
                 selectedRating = parseInt(this.dataset.rating);
-                ratingInput.value = selectedRating;
+                document.getElementById('rating').value = selectedRating;
                 updateStars(selectedRating);
-                ratingText.textContent = ratingTexts[selectedRating];
+                document.getElementById('ratingText').textContent = ratingTexts[selectedRating];
+                showTags(selectedRating);
                 updateSubmitButton();
             });
             
             star.addEventListener('mouseover', function() {
-                const rating = parseInt(this.dataset.rating);
-                updateStars(rating);
-                ratingText.textContent = ratingTexts[rating];
+                updateStars(parseInt(this.dataset.rating));
             });
         });
         
-        document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+        document.getElementById('ratingStars').addEventListener('mouseleave', () => {
             updateStars(selectedRating);
-            ratingText.textContent = selectedRating ? ratingTexts[selectedRating] : '';
         });
         
-        function updateStars(rating) {
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
+        // Radio buttons
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                updateSubmitButton();
             });
-        }
+        });
         
-        // Manejo del formulario
+        // NPS buttons
+        document.querySelectorAll('.nps-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedNPS = parseInt(this.dataset.nps);
+                document.getElementById('npsScore').value = selectedNPS;
+                document.querySelectorAll('.nps-button').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                updateSubmitButton();
+            });
+        });
+        
+        // Submit
         document.getElementById('ratingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const errorMessage = document.getElementById('errorMessage');
             errorMessage.classList.remove('show');
             
-            // Validación adicional
-            if (selectedRating === 0) {
-                errorMessage.textContent = '⭐ Por favor selecciona una calificación entre 1 y 5 estrellas';
-                errorMessage.style.background = '#fee';
-                errorMessage.style.color = '#c33';
-                errorMessage.classList.add('show');
-                return;
-            }
-            
             const formData = {
                 numeroPedido: numeroPedido,
-                calificacion: selectedRating,
-                comentarios: document.getElementById('comments').value || 'Sin comentarios',
+                calificacion_delivery: selectedRating,
+                tags_seleccionados: selectedTags.join(', ') || 'Ninguno',
+                evaluacion_whatsapp: document.querySelector('input[name="whatsapp"]:checked').value,
+                tiempo_cumplido: document.querySelector('input[name="tiempo"]:checked').value,
+                nps_score: selectedNPS,
+                comentarios_generales: document.getElementById('comments').value || 'Sin comentarios',
                 timestamp: new Date().toISOString()
             };
             
-            // Mostrar loading
             document.getElementById('ratingForm').style.display = 'none';
             document.getElementById('orderInfo').style.display = 'none';
             document.getElementById('loading').classList.add('show');
+            document.getElementById('loading').querySelector('p').textContent = 'Enviando tu evaluación...';
             
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbyhzR70QDCRRUWsUdADkksVXzFn1U0tfoMdBBjRCrmmPcCTMa7gXvDaYGsuUL-Y40u2SA/exec', {
+                const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(formData),
                     redirect: 'follow'
                 });
@@ -465,28 +701,24 @@
                 document.getElementById('loading').classList.remove('show');
                 
                 if (result.success) {
-                    // Éxito
                     document.getElementById('successMessage').classList.add('show');
                 } else if (result.alreadyEvaluated) {
-                    // Ya fue evaluado
-                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong><br><br>Gracias por tu tiempo.';
+                    errorMessage.innerHTML = '✅ <strong>Este pedido ya ha sido evaluado</strong>';
                     errorMessage.style.background = '#d1ecf1';
                     errorMessage.style.color = '#0c5460';
                     errorMessage.classList.add('show');
                 } else {
-                    // Otro error
-                    errorMessage.textContent = '❌ ' + (result.error || 'Hubo un error al enviar tu evaluación.');
+                    errorMessage.textContent = '❌ ' + (result.error || 'Error al enviar');
                     errorMessage.style.background = '#fee';
                     errorMessage.style.color = '#c33';
                     errorMessage.classList.add('show');
                     document.getElementById('ratingForm').style.display = 'block';
                     document.getElementById('orderInfo').style.display = 'block';
                 }
-                
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('loading').classList.remove('show');
-                errorMessage.textContent = '❌ Hubo un error al enviar tu evaluación. Por favor intenta de nuevo.';
+                errorMessage.textContent = '❌ Error al enviar. Intenta de nuevo.';
                 errorMessage.style.background = '#fee';
                 errorMessage.style.color = '#c33';
                 errorMessage.classList.add('show');
@@ -495,11 +727,7 @@
             }
         });
         
-        // Inicializar el formulario al cargar la página
-        window.addEventListener('DOMContentLoaded', function() {
-            initializeForm();
-            updateSubmitButton();
-        });
-</script>
+        window.addEventListener('DOMContentLoaded', initializeForm);
+    </script>
 </body>
 </html>
