@@ -105,9 +105,18 @@
             border-color: #FF8C00;
         }
 
+        select {
+            cursor: pointer;
+        }
+
         select option {
             background: #1A1A1A;
             color: white;
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* Modo Sorteo */
@@ -151,6 +160,13 @@
 
         .manual-section label {
             color: #FF8C00;
+        }
+
+        .hint-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            font-style: italic;
         }
 
         /* Premios Compactos */
@@ -629,51 +645,60 @@
                 <button class="btn-add-small" onclick="addPremio()">+ Agregar premio</button>
             </div>
 
-            <div class="form-group">
-                <label>🎲 Modo de Sorteo</label>
-                <div class="modo-sorteo">
-                    <button class="modo-btn active" onclick="cambiarModo('aleatorio')">🎰 Aleatorio</button>
-                    <button class="modo-btn" onclick="cambiarModo('manual')">✋ Manual</button>
-                </div>
-            </div>
-
-            <div class="manual-section" id="manualSection">
-                <div class="form-group">
-                    <label>👤 Seleccionar Ganador</label>
-                    <select id="ganadorManual">
-                        <option value="">Cargando participantes...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>🎁 Seleccionar Premio</label>
-                    <select id="premioManual">
-                        <option value="">Primero define los premios</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="info-box" id="infoBox">
-                <div class="info-row">
-                    <span class="info-label">Participantes:</span>
-                    <span class="info-value" id="totalParticipantes">0</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Rango:</span>
-                    <span class="info-value" id="rangoFechas">-</span>
-                </div>
-                <div class="info-row" id="modoActualRow" style="display: none;">
-                    <span class="info-label">Modo:</span>
-                    <span class="info-value" id="modoActual">Aleatorio</span>
-                </div>
-            </div>
-
-            <button class="btn-primary" id="btnIniciar" onclick="cargarParticipantes()">
-                🎲 Iniciar Sorteo
+            <button class="btn-primary" id="btnCargarParticipantes" onclick="cargarParticipantes()">
+                📊 Cargar Participantes
             </button>
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p style="font-size: 13px; color: #999;">Cargando...</p>
+                <p style="font-size: 13px; color: #999;">Cargando participantes...</p>
+            </div>
+
+            <!-- Sección que aparece después de cargar participantes -->
+            <div id="seccionModoSorteo" style="display: none;">
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>🎲 Modo de Sorteo</label>
+                    <div class="modo-sorteo">
+                        <button class="modo-btn active" onclick="cambiarModo('aleatorio')">🎰 Aleatorio</button>
+                        <button class="modo-btn" onclick="cambiarModo('manual')">✋ Manual</button>
+                    </div>
+                </div>
+
+                <div class="manual-section" id="manualSection">
+                    <div class="form-group">
+                        <label>👤 Seleccionar Ganador</label>
+                        <select id="ganadorManual">
+                            <option value="">Selecciona un participante...</option>
+                        </select>
+                        <div class="hint-text">Elige quién será el ganador predefinido</div>
+                    </div>
+                    <div class="form-group">
+                        <label>🎁 Seleccionar Premio</label>
+                        <select id="premioManual">
+                            <option value="">Selecciona un premio...</option>
+                        </select>
+                        <div class="hint-text">Elige el premio que ganará</div>
+                    </div>
+                </div>
+
+                <div class="info-box show">
+                    <div class="info-row">
+                        <span class="info-label">Participantes:</span>
+                        <span class="info-value" id="totalParticipantes">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Rango:</span>
+                        <span class="info-value" id="rangoFechas">-</span>
+                    </div>
+                    <div class="info-row" id="modoActualRow" style="display: none;">
+                        <span class="info-label">Modo:</span>
+                        <span class="info-value" id="modoActual">Aleatorio</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="btnIniciar" onclick="iniciarSorteo()">
+                    🎲 Iniciar Sorteo
+                </button>
             </div>
         </div>
 
@@ -693,7 +718,7 @@
                 </div>
             </div>
 
-            <button class="btn-sortear" id="btnSortear" onclick="iniciarSorteo()">
+            <button class="btn-sortear" id="btnSortear" onclick="sortearNumero()">
                 🎲 ¡SORTEAR AHORA!
             </button>
         </div>
@@ -730,7 +755,7 @@
         let premios = [];
         let sorteoEnProceso = false;
         let ganadorSeleccionado = null;
-        let modoSorteo = 'aleatorio'; // 'aleatorio' o 'manual'
+        let modoSorteo = 'aleatorio';
 
         // Inicializar fechas
         window.addEventListener('DOMContentLoaded', () => {
@@ -755,7 +780,6 @@
             if (modo === 'manual') {
                 document.getElementById('manualSection').classList.add('show');
                 document.getElementById('modoActual').textContent = 'Manual';
-                actualizarSelectsPremios();
             } else {
                 document.getElementById('manualSection').classList.remove('show');
                 document.getElementById('modoActual').textContent = 'Aleatorio';
@@ -773,7 +797,7 @@
             
             const select = document.getElementById('premioManual');
             select.innerHTML = premiosActuales.length > 0
-                ? premiosActuales.map(p => `<option value="${p}">${p}</option>`).join('')
+                ? '<option value="">Selecciona un premio...</option>' + premiosActuales.map(p => `<option value="${p}">${p}</option>`).join('')
                 : '<option value="">Primero define los premios</option>';
         }
 
@@ -807,7 +831,7 @@
             }
         }
 
-        // Cargar Participantes
+        // Cargar Participantes (primer paso)
         async function cargarParticipantes() {
             const fechaInicio = document.getElementById('fechaInicio').value;
             const fechaFin = document.getElementById('fechaFin').value;
@@ -833,6 +857,63 @@
                 return;
             }
 
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('btnCargarParticipantes').disabled = true;
+
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=obtenerParticipantes&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                document.getElementById('loading').classList.remove('show');
+
+                if (!data.success) {
+                    errorMessage.textContent = '❌ ' + (data.error || 'Error al cargar');
+                    errorMessage.classList.add('show');
+                    document.getElementById('btnCargarParticipantes').disabled = false;
+                    return;
+                }
+
+                if (data.total === 0) {
+                    errorMessage.textContent = '❌ No hay evaluaciones en ese rango';
+                    errorMessage.classList.add('show');
+                    document.getElementById('btnCargarParticipantes').disabled = false;
+                    return;
+                }
+
+                participantes = data.evaluaciones;
+
+                // Actualizar info
+                document.getElementById('totalParticipantes').textContent = data.total;
+                document.getElementById('rangoFechas').textContent = `${data.rango.inicio} - ${data.rango.fin}`;
+
+                // Llenar select de ganadores
+                const selectGanador = document.getElementById('ganadorManual');
+                selectGanador.innerHTML = '<option value="">Selecciona un participante...</option>' + 
+                    participantes.map(p => `<option value="${p.numeroPedido}">#${p.numeroPedido} - ${p.fecha}</option>`).join('');
+
+                // Llenar select de premios
+                actualizarSelectsPremios();
+
+                // Mostrar sección de modo
+                document.getElementById('seccionModoSorteo').style.display = 'block';
+
+                console.log('✅ Participantes cargados:', participantes.length);
+
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = '❌ Error de conexión';
+                errorMessage.classList.add('show');
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('btnCargarParticipantes').disabled = false;
+            }
+        }
+
+        // Iniciar Sorteo (segundo paso)
+        function iniciarSorteo() {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+
             // Validar modo manual
             if (modoSorteo === 'manual') {
                 const ganadorManual = document.getElementById('ganadorManual').value;
@@ -845,60 +926,13 @@
                 }
             }
 
-            document.getElementById('loading').classList.add('show');
-            document.getElementById('btnIniciar').disabled = true;
-
-            try {
-                const url = `${APPS_SCRIPT_URL}?action=obtenerParticipantes&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                document.getElementById('loading').classList.remove('show');
-
-                if (!data.success) {
-                    errorMessage.textContent = '❌ ' + (data.error || 'Error al cargar');
-                    errorMessage.classList.add('show');
-                    document.getElementById('btnIniciar').disabled = false;
-                    return;
-                }
-
-                if (data.total === 0) {
-                    errorMessage.textContent = '❌ No hay evaluaciones en ese rango';
-                    errorMessage.classList.add('show');
-                    document.getElementById('btnIniciar').disabled = false;
-                    return;
-                }
-
-                participantes = data.evaluaciones;
-
-                document.getElementById('totalParticipantes').textContent = data.total;
-                document.getElementById('rangoFechas').textContent = `${data.rango.inicio} - ${data.rango.fin}`;
-                document.getElementById('infoBox').classList.add('show');
-
-                // Llenar select de ganadores
-                const selectGanador = document.getElementById('ganadorManual');
-                selectGanador.innerHTML = participantes.map(p => 
-                    `<option value="${p.numeroPedido}">#${p.numeroPedido} - ${p.fecha}</option>`
-                ).join('');
-
-                // Mostrar área de sorteo
-                document.getElementById('configPanel').style.display = 'none';
-                document.getElementById('sorteoArea').classList.add('show');
-
-                console.log('✅ Participantes:', participantes.length);
-                console.log('🎲 Modo:', modoSorteo);
-
-            } catch (error) {
-                console.error('Error:', error);
-                errorMessage.textContent = '❌ Error de conexión';
-                errorMessage.classList.add('show');
-                document.getElementById('loading').classList.remove('show');
-                document.getElementById('btnIniciar').disabled = false;
-            }
+            // Ocultar config y mostrar sorteo
+            document.getElementById('configPanel').style.display = 'none';
+            document.getElementById('sorteoArea').classList.add('show');
         }
 
-        // Iniciar Sorteo
-        function iniciarSorteo() {
+        // Sortear Número
+        function sortearNumero() {
             if (sorteoEnProceso || participantes.length === 0) return;
 
             sorteoEnProceso = true;
@@ -944,20 +978,15 @@
 
                     if (iteraciones >= maxIteraciones) {
                         clearInterval(intervalo);
-                        seleccionarGanador();
+                        ganadorSeleccionado = participantes[Math.floor(Math.random() * participantes.length)];
+                        document.getElementById('numeroDisplay').textContent = `#${ganadorSeleccionado.numeroPedido}`;
+                        
+                        setTimeout(() => {
+                            mostrarModalGanador();
+                        }, 500);
                     }
                 }, velocidad);
             }
-        }
-
-        // Seleccionar Ganador (modo aleatorio)
-        function seleccionarGanador() {
-            ganadorSeleccionado = participantes[Math.floor(Math.random() * participantes.length)];
-            document.getElementById('numeroDisplay').textContent = `#${ganadorSeleccionado.numeroPedido}`;
-            
-            setTimeout(() => {
-                mostrarModalGanador();
-            }, 500);
         }
 
         function mostrarModalGanador() {
@@ -990,7 +1019,6 @@
             }
 
             const anguloBase = 360 / premios.length;
-            // Girar a la posición correcta (invertido porque la ruleta gira en sentido contrario)
             const anguloObjetivo = 360 - (premioIndex * anguloBase + anguloBase / 2);
             const grados = anguloObjetivo + 3600 + (Math.random() * 20 - 10);
 
@@ -1003,7 +1031,7 @@
             }, 4500);
         }
 
-        // Crear Ruleta con segmentos correctos
+        // Crear Ruleta
         function crearRuleta() {
             const ruleta = document.getElementById('ruleta');
             ruleta.innerHTML = '';
@@ -1040,10 +1068,8 @@
 
         // Mostrar Premio Ganador
         async function mostrarPremioGanador(premio) {
-            // Confetti
             lanzarConfeti();
 
-            // Mostrar modal
             document.getElementById('premioGanadorNumero').textContent = `#${ganadorSeleccionado.numeroPedido}`;
             document.getElementById('premioGanado').textContent = premio;
             document.getElementById('modalPremioFinal').classList.add('show');
@@ -1068,7 +1094,7 @@
                     })
                 });
 
-                console.log('✅ Ganador registrado:', datos);
+                console.log('✅ Ganador registrado');
             } catch (error) {
                 console.error('Error:', error);
             }
