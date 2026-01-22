@@ -86,7 +86,9 @@
             gap: 10px;
         }
 
-        input[type="date"] {
+        input[type="date"],
+        input[type="text"],
+        select {
             background: #1A1A1A;
             border: 2px solid #404040;
             color: white;
@@ -96,9 +98,59 @@
             width: 100%;
         }
 
-        input[type="date"]:focus {
+        input[type="date"]:focus,
+        input[type="text"]:focus,
+        select:focus {
             outline: none;
             border-color: #FF8C00;
+        }
+
+        select option {
+            background: #1A1A1A;
+            color: white;
+        }
+
+        /* Modo Sorteo */
+        .modo-sorteo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modo-btn {
+            background: #1A1A1A;
+            border: 2px solid #404040;
+            color: #999;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modo-btn.active {
+            background: linear-gradient(135deg, #FF8C00, #FF6B00);
+            border-color: #FF8C00;
+            color: white;
+        }
+
+        /* Sección Manual */
+        .manual-section {
+            display: none;
+            background: #1A1A1A;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .manual-section.show {
+            display: block;
+        }
+
+        .manual-section label {
+            color: #FF8C00;
         }
 
         /* Premios Compactos */
@@ -247,14 +299,14 @@
             margin-bottom: 10px;
         }
 
-        /* Ruleta Minimalista */
+        /* Ruleta Mejorada */
         .ruleta-container {
             margin: 20px 0;
         }
 
         .ruleta-wrapper {
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             margin: 0 auto;
             position: relative;
         }
@@ -282,36 +334,35 @@
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
-        .ruleta-slice {
+        /* Segmentos de la ruleta */
+        .ruleta-segment {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
             overflow: hidden;
         }
 
-        .ruleta-slice::before {
-            content: '';
+        .ruleta-segment-fill {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: var(--slice-color);
-            clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
-            transform-origin: center center;
-            transform: rotate(var(--slice-rotation));
+            width: 200%;
+            height: 200%;
+            border-radius: 50%;
         }
 
         .ruleta-text {
             position: absolute;
-            top: 25%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(var(--text-rotation));
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 14px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            width: 120px;
+            font-size: 13px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            padding-right: 20%;
             text-align: center;
-            z-index: 2;
         }
 
         .ruleta-center {
@@ -514,12 +565,6 @@
             to { opacity: 1; }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
         /* Responsive */
         @media (max-width: 380px) {
             .numero-display {
@@ -527,8 +572,8 @@
             }
 
             .ruleta-wrapper {
-                width: 240px;
-                height: 240px;
+                width: 260px;
+                height: 260px;
             }
 
             .modal-numero {
@@ -584,6 +629,29 @@
                 <button class="btn-add-small" onclick="addPremio()">+ Agregar premio</button>
             </div>
 
+            <div class="form-group">
+                <label>🎲 Modo de Sorteo</label>
+                <div class="modo-sorteo">
+                    <button class="modo-btn active" onclick="cambiarModo('aleatorio')">🎰 Aleatorio</button>
+                    <button class="modo-btn" onclick="cambiarModo('manual')">✋ Manual</button>
+                </div>
+            </div>
+
+            <div class="manual-section" id="manualSection">
+                <div class="form-group">
+                    <label>👤 Seleccionar Ganador</label>
+                    <select id="ganadorManual">
+                        <option value="">Cargando participantes...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🎁 Seleccionar Premio</label>
+                    <select id="premioManual">
+                        <option value="">Primero define los premios</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="info-box" id="infoBox">
                 <div class="info-row">
                     <span class="info-label">Participantes:</span>
@@ -592,6 +660,10 @@
                 <div class="info-row">
                     <span class="info-label">Rango:</span>
                     <span class="info-value" id="rangoFechas">-</span>
+                </div>
+                <div class="info-row" id="modoActualRow" style="display: none;">
+                    <span class="info-label">Modo:</span>
+                    <span class="info-value" id="modoActual">Aleatorio</span>
                 </div>
             </div>
 
@@ -658,6 +730,7 @@
         let premios = [];
         let sorteoEnProceso = false;
         let ganadorSeleccionado = null;
+        let modoSorteo = 'aleatorio'; // 'aleatorio' o 'manual'
 
         // Inicializar fechas
         window.addEventListener('DOMContentLoaded', () => {
@@ -667,6 +740,48 @@
 
             document.getElementById('fechaInicio').value = hace7dias.toISOString().split('T')[0];
             document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
+        });
+
+        // Cambiar modo de sorteo
+        function cambiarModo(modo) {
+            modoSorteo = modo;
+            
+            document.querySelectorAll('.modo-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            if (modo === 'manual') {
+                document.getElementById('manualSection').classList.add('show');
+                document.getElementById('modoActual').textContent = 'Manual';
+                actualizarSelectsPremios();
+            } else {
+                document.getElementById('manualSection').classList.remove('show');
+                document.getElementById('modoActual').textContent = 'Aleatorio';
+            }
+            
+            document.getElementById('modoActualRow').style.display = 'flex';
+        }
+
+        // Actualizar selects de premios
+        function actualizarSelectsPremios() {
+            const premioInputs = document.querySelectorAll('.premio-input');
+            const premiosActuales = Array.from(premioInputs)
+                .map(input => input.value.trim())
+                .filter(p => p !== '');
+            
+            const select = document.getElementById('premioManual');
+            select.innerHTML = premiosActuales.length > 0
+                ? premiosActuales.map(p => `<option value="${p}">${p}</option>`).join('')
+                : '<option value="">Primero define los premios</option>';
+        }
+
+        // Actualizar selects cuando cambian los premios
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('premio-input')) {
+                actualizarSelectsPremios();
+            }
         });
 
         // Agregar/Remover Premios
@@ -679,12 +794,14 @@
                 <button onclick="removePremio(this)">×</button>
             `;
             container.appendChild(chip);
+            actualizarSelectsPremios();
         }
 
         function removePremio(btn) {
             const container = document.getElementById('premiosChips');
             if (container.children.length > 1) {
                 btn.parentElement.remove();
+                actualizarSelectsPremios();
             } else {
                 alert('⚠️ Debe haber al menos un premio');
             }
@@ -714,6 +831,18 @@
                 errorMessage.textContent = '❌ Agrega al menos un premio';
                 errorMessage.classList.add('show');
                 return;
+            }
+
+            // Validar modo manual
+            if (modoSorteo === 'manual') {
+                const ganadorManual = document.getElementById('ganadorManual').value;
+                const premioManual = document.getElementById('premioManual').value;
+                
+                if (!ganadorManual || !premioManual) {
+                    errorMessage.textContent = '❌ En modo manual debes seleccionar ganador y premio';
+                    errorMessage.classList.add('show');
+                    return;
+                }
             }
 
             document.getElementById('loading').classList.add('show');
@@ -746,11 +875,18 @@
                 document.getElementById('rangoFechas').textContent = `${data.rango.inicio} - ${data.rango.fin}`;
                 document.getElementById('infoBox').classList.add('show');
 
+                // Llenar select de ganadores
+                const selectGanador = document.getElementById('ganadorManual');
+                selectGanador.innerHTML = participantes.map(p => 
+                    `<option value="${p.numeroPedido}">#${p.numeroPedido} - ${p.fecha}</option>`
+                ).join('');
+
                 // Mostrar área de sorteo
                 document.getElementById('configPanel').style.display = 'none';
                 document.getElementById('sorteoArea').classList.add('show');
 
                 console.log('✅ Participantes:', participantes.length);
+                console.log('🎲 Modo:', modoSorteo);
 
             } catch (error) {
                 console.error('Error:', error);
@@ -768,39 +904,70 @@
             sorteoEnProceso = true;
             document.getElementById('btnSortear').disabled = true;
 
-            // Animación de números
-            let iteraciones = 0;
-            const maxIteraciones = 60;
-            let velocidad = 30;
-
-            const intervalo = setInterval(() => {
-                const randomParticipante = participantes[Math.floor(Math.random() * participantes.length)];
-                document.getElementById('numeroDisplay').textContent = `#${randomParticipante.numeroPedido}`;
+            if (modoSorteo === 'manual') {
+                // Modo manual: mostrar número predefinido con animación breve
+                const ganadorManual = document.getElementById('ganadorManual').value;
+                ganadorSeleccionado = participantes.find(p => p.numeroPedido === ganadorManual);
                 
-                iteraciones++;
-                velocidad += 8;
+                // Animación breve
+                let iteraciones = 0;
+                const maxIteraciones = 20;
+                let velocidad = 50;
 
-                if (iteraciones >= maxIteraciones) {
-                    clearInterval(intervalo);
-                    seleccionarGanador();
-                }
-            }, velocidad);
+                const intervalo = setInterval(() => {
+                    const randomParticipante = participantes[Math.floor(Math.random() * participantes.length)];
+                    document.getElementById('numeroDisplay').textContent = `#${randomParticipante.numeroPedido}`;
+                    
+                    iteraciones++;
+                    velocidad += 10;
+
+                    if (iteraciones >= maxIteraciones) {
+                        clearInterval(intervalo);
+                        document.getElementById('numeroDisplay').textContent = `#${ganadorSeleccionado.numeroPedido}`;
+                        setTimeout(() => {
+                            mostrarModalGanador();
+                        }, 500);
+                    }
+                }, velocidad);
+            } else {
+                // Modo aleatorio: animación completa
+                let iteraciones = 0;
+                const maxIteraciones = 60;
+                let velocidad = 30;
+
+                const intervalo = setInterval(() => {
+                    const randomParticipante = participantes[Math.floor(Math.random() * participantes.length)];
+                    document.getElementById('numeroDisplay').textContent = `#${randomParticipante.numeroPedido}`;
+                    
+                    iteraciones++;
+                    velocidad += 8;
+
+                    if (iteraciones >= maxIteraciones) {
+                        clearInterval(intervalo);
+                        seleccionarGanador();
+                    }
+                }, velocidad);
+            }
         }
 
-        // Seleccionar Ganador
+        // Seleccionar Ganador (modo aleatorio)
         function seleccionarGanador() {
             ganadorSeleccionado = participantes[Math.floor(Math.random() * participantes.length)];
-            
             document.getElementById('numeroDisplay').textContent = `#${ganadorSeleccionado.numeroPedido}`;
-            document.getElementById('ganadorNumeroModal').textContent = `#${ganadorSeleccionado.numeroPedido}`;
             
             setTimeout(() => {
-                document.getElementById('modalGanadorNumero').classList.add('show');
-                setTimeout(() => {
-                    cerrarModalNumero();
-                    girarRuleta();
-                }, 2000);
+                mostrarModalGanador();
             }, 500);
+        }
+
+        function mostrarModalGanador() {
+            document.getElementById('ganadorNumeroModal').textContent = `#${ganadorSeleccionado.numeroPedido}`;
+            document.getElementById('modalGanadorNumero').classList.add('show');
+            
+            setTimeout(() => {
+                cerrarModalNumero();
+                girarRuleta();
+            }, 2000);
         }
 
         function cerrarModalNumero() {
@@ -813,9 +980,19 @@
             document.getElementById('ruletaContainer').style.display = 'block';
 
             const ruletaEl = document.getElementById('ruleta');
-            const premioIndex = Math.floor(Math.random() * premios.length);
+            let premioIndex;
+            
+            if (modoSorteo === 'manual') {
+                const premioManual = document.getElementById('premioManual').value;
+                premioIndex = premios.indexOf(premioManual);
+            } else {
+                premioIndex = Math.floor(Math.random() * premios.length);
+            }
+
             const anguloBase = 360 / premios.length;
-            const grados = (premioIndex * anguloBase) + 3600 + (Math.random() * 30 - 15);
+            // Girar a la posición correcta (invertido porque la ruleta gira en sentido contrario)
+            const anguloObjetivo = 360 - (premioIndex * anguloBase + anguloBase / 2);
+            const grados = anguloObjetivo + 3600 + (Math.random() * 20 - 10);
 
             setTimeout(() => {
                 ruletaEl.style.transform = `rotate(${grados}deg)`;
@@ -826,28 +1003,39 @@
             }, 4500);
         }
 
-        // Crear Ruleta
+        // Crear Ruleta con segmentos correctos
         function crearRuleta() {
             const ruleta = document.getElementById('ruleta');
-            ruleta.innerHTML = '<div class="ruleta-center">🎁</div>';
+            ruleta.innerHTML = '';
 
             const colores = ['#FF6B35', '#F7931E', '#FFA500', '#FF8C00', '#FF7F00', '#FF6500'];
-            const anguloBase = 360 / premios.length;
+            const numSegmentos = premios.length;
+            const anguloSegmento = 360 / numSegmentos;
 
             premios.forEach((premio, index) => {
-                const slice = document.createElement('div');
-                slice.className = 'ruleta-slice';
-                slice.style.setProperty('--slice-color', colores[index % colores.length]);
-                slice.style.setProperty('--slice-rotation', `${index * anguloBase}deg`);
+                const segment = document.createElement('div');
+                segment.className = 'ruleta-segment';
+                segment.style.transform = `rotate(${index * anguloSegmento}deg) skewY(-${90 - anguloSegmento}deg)`;
                 
-                const texto = document.createElement('div');
-                texto.className = 'ruleta-text';
-                texto.style.setProperty('--text-rotation', `${index * anguloBase + anguloBase/2}deg`);
-                texto.textContent = premio;
-                slice.appendChild(texto);
+                const fill = document.createElement('div');
+                fill.className = 'ruleta-segment-fill';
+                fill.style.background = colores[index % colores.length];
                 
-                ruleta.appendChild(slice);
+                const text = document.createElement('div');
+                text.className = 'ruleta-text';
+                text.style.transform = `skewY(${90 - anguloSegmento}deg) rotate(${anguloSegmento / 2}deg)`;
+                text.textContent = premio;
+                
+                segment.appendChild(fill);
+                segment.appendChild(text);
+                ruleta.appendChild(segment);
             });
+
+            // Centro
+            const centro = document.createElement('div');
+            centro.className = 'ruleta-center';
+            centro.textContent = '🎁';
+            ruleta.appendChild(centro);
         }
 
         // Mostrar Premio Ganador
@@ -867,7 +1055,8 @@
                     premioGanado: premio,
                     totalParticipantes: participantes.length,
                     rangoFechas: document.getElementById('rangoFechas').textContent,
-                    premiosDisponibles: premios
+                    premiosDisponibles: premios,
+                    organizador: modoSorteo === 'manual' ? 'Manual' : 'Aleatorio'
                 };
 
                 await fetch(APPS_SCRIPT_URL, {
@@ -879,7 +1068,7 @@
                     })
                 });
 
-                console.log('✅ Ganador registrado');
+                console.log('✅ Ganador registrado:', datos);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -889,7 +1078,6 @@
 
         function cerrarModalPremio() {
             document.getElementById('modalPremioFinal').classList.remove('show');
-            // Permitir nuevo sorteo
             document.getElementById('btnSortear').disabled = false;
             document.getElementById('ruletaContainer').style.display = 'none';
         }
