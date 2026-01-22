@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Sorteo Somar Express 🎊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .config-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.8s;
+        }
+
+        .config-panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="date"],
+        input[type="text"] {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="date"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .premios-section {
+            margin-bottom: 20px;
+        }
+
+        .premio-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .premio-input input {
+            flex: 1;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-add {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .sorteo-area {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .sorteo-area.show {
+            display: block;
+        }
+
+        .main-display {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .numero-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .numero-display h3 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .numero-actual {
+            font-size: 72px;
+            font-weight: bold;
+            color: #764ba2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .ruleta-container {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .ruleta {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .ruleta-slice {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+            transform-origin: center center;
+        }
+
+        .ruleta-pointer {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff6b35;
+            z-index: 10;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .premios-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .premio-badge {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-sorteo {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+            animation: pulseGlow 2s infinite;
+        }
+
+        .btn-sorteo:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        .btn-sorteo:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            animation: none;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4); }
+            50% { box-shadow: 0 8px 30px rgba(255, 107, 53, 0.7); }
+        }
+
+        .ganador-display {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            animation: bounceIn 1s;
+        }
+
+        .ganador-display.show {
+            display: block;
+        }
+
+        .ganador-display h2 {
+            color: #2ecc71;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .ganador-numero {
+            font-size: 96px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .ganador-premio {
+            font-size: 36px;
+            color: #f7931e;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .ruleta {
+                width: 300px;
+                height: 300px;
+            }
+
+            .numero-actual {
+                font-size: 48px;
+            }
+
+            .btn-sorteo {
+                padding: 15px 40px;
+                font-size: 20px;
+            }
+
+            .ganador-numero {
+                font-size: 64px;
+            }
+
+            .ganador-premio {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Sorteo Somar Express 🎊</h1>
+            <p>¡Premiamos a nuestros clientes que nos evalúan!</p>
+        </div>
+
+        <!-- Panel de Configuración -->
+        <div class="config-panel" id="configPanel">
+            <h2>⚙️ Configuración del Sorteo</h2>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📅 Fecha Inicio</label>
+                    <input type="date" id="fechaInicio" required>
+                </div>
+                <div class="form-group">
+                    <label>📅 Fecha Fin</label>
+                    <input type="date" id="fechaFin" required>
+                </div>
+            </div>
+
+            <div class="premios-section">
+                <label>🎁 Premios Disponibles</label>
+                <div id="premiosContainer">
+                    <div class="premio-input">
+                        <input type="text" class="premio-field" placeholder="Ej: Pizza Grande" value="🍕 Pizza Grande">
+                        <button class="btn-remove" onclick="removePremio(this)">✖</button>
+                    </div>
+                    <div class="premio-input">
+                        <input type="text" class="premio-field" placeholder="Ej: Hamburguesa Doble" value="🍔 Hamburguesa Doble">
+                        <button class="btn-remove" onclick="removePremio(this)">✖</button>
+                    </div>
+                    <div class="premio-input">
+                        <input type="text" class="premio-field" placeholder="Ej: Envío Gratis" value="🚀 Envío Gratis">
+                        <button class="btn-remove" onclick="removePremio(this)">✖</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addPremio()">➕ Agregar Premio</button>
+            </div>
+
+            <div class="info-box" id="infoBox" style="display: none;">
+                <strong>📊 Participantes:</strong> <span id="totalParticipantes">0</span><br>
+                <strong>📅 Rango:</strong> <span id="rangoFechas">-</span>
+            </div>
+
+            <button class="btn-primary" id="btnIniciar" onclick="cargarParticipantes()">
+                🎲 Cargar Participantes
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Cargando participantes...</p>
+            </div>
+        </div>
+
+        <!-- Área del Sorteo -->
+        <div class="sorteo-area" id="sorteoArea">
+            <div class="main-display">
+                <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+                
+                <div class="content">
+                    <div class="numero-display">
+                        <h3>🎯 Número Participante</h3>
+                        <div class="numero-actual" id="numeroActual">-</div>
+                    </div>
+
+                    <div class="ruleta-container" id="ruletaContainer" style="display: none;">
+                        <div class="ruleta-pointer"></div>
+                        <div class="ruleta" id="ruleta"></div>
+                    </div>
+
+                    <div class="premios-list" id="premiosList"></div>
+
+                    <div class="ganador-display" id="ganadorDisplay">
+                        <h2>🎊 ¡TENEMOS GANADOR! 🎊</h2>
+                        <div class="ganador-numero" id="ganadorNumero">-</div>
+                        <div class="ganador-premio" id="ganadorPremio">-</div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn-sorteo" id="btnSortear" onclick="iniciarSorteo()">
+                            🎲 ¡SORTEAR AHORA!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhzR70QDCRRUWsUdADkksVXzFn1U0tfoMdBBjRCrmmPcCTMa7gXvDaYGsuUL-Y40u2SA/exec';
+        
+        let participantes = [];
+        let premios = [];
+        let sorteoEnProceso = false;
+        let ganadorSeleccionado = null;
+
+        // Agregar/Remover Premios
+        function addPremio() {
+            const container = document.getElementById('premiosContainer');
+            const div = document.createElement('div');
+            div.className = 'premio-input';
+            div.innerHTML = `
+                <input type="text" class="premio-field" placeholder="Ej: Descuento 20%">
+                <button class="btn-remove" onclick="removePremio(this)">✖</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removePremio(btn) {
+            const container = document.getElementById('premiosContainer');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                alert('Debe haber al menos un premio');
+            }
+        }
+
+        // Cargar Participantes
+        async function cargarParticipantes() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            errorMessage.classList.remove('show');
+
+            if (!fechaInicio || !fechaFin) {
+                errorMessage.textContent = '❌ Por favor selecciona las fechas';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // Validar premios
+            const premiosFields = document.querySelectorAll('.premio-field');
+            premios = Array.from(premiosFields)
+                .map(field => field.value.trim())
+                .filter(p => p !== '');
+
+            if (premios.length === 0) {
+                errorMessage.textContent = '❌ Debes agregar al menos un premio';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('btnIniciar').disabled = true;
+
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=obtenerParticipantes&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                document.getElementById('loading').classList.remove('show');
+
+                if (!data.success) {
+                    errorMessage.textContent = '❌ ' + (data.error || 'Error al cargar participantes');
+                    errorMessage.classList.add('show');
+                    document.getElementById('btnIniciar').disabled = false;
+                    return;
+                }
+
+                if (data.total === 0) {
+                    errorMessage.textContent = '❌ No hay evaluaciones en ese rango de fechas';
+                    errorMessage.classList.add('show');
+                    document.getElementById('btnIniciar').disabled = false;
+                    return;
+                }
+
+                participantes = data.evaluaciones;
+
+                document.getElementById('totalParticipantes').textContent = data.total;
+                document.getElementById('rangoFechas').textContent = `${data.rango.inicio} - ${data.rango.fin}`;
+                document.getElementById('infoBox').style.display = 'block';
+
+                // Mostrar premios
+                const premiosList = document.getElementById('premiosList');
+                premiosList.innerHTML = premios.map(p => `
+                    <div class="premio-badge">${p}</div>
+                `).join('');
+
+                // Ocultar config y mostrar sorteo
+                document.getElementById('configPanel').style.display = 'none';
+                document.getElementById('sorteoArea').classList.add('show');
+                
+                console.log('✅ Participantes cargados:', participantes);
+
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = '❌ Error de conexión';
+                errorMessage.classList.add('show');
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('btnIniciar').disabled = false;
+            }
+        }
+
+        // Iniciar Sorteo
+        function iniciarSorteo() {
+            if (sorteoEnProceso || participantes.length === 0) return;
+
+            sorteoEnProceso = true;
+            document.getElementById('btnSortear').disabled = true;
+            document.getElementById('ganadorDisplay').classList.remove('show');
+
+            // Animación de números
+            let iteraciones = 0;
+            const maxIteraciones = 50 + Math.floor(Math.random() * 30);
+            let velocidad = 50;
+
+            const intervalo = setInterval(() => {
+                const randomParticipante = participantes[Math.floor(Math.random() * participantes.length)];
+                document.getElementById('numeroActual').textContent = `#${randomParticipante.numeroPedido}`;
+                
+                iteraciones++;
+                velocidad += 10;
+
+                if (iteraciones >= maxIteraciones) {
+                    clearInterval(intervalo);
+                    seleccionarGanador();
+                }
+            }, velocidad);
+        }
+
+        // Seleccionar Ganador
+        function seleccionarGanador() {
+            ganadorSeleccionado = participantes[Math.floor(Math.random() * participantes.length)];
+            
+            document.getElementById('numeroActual').textContent = `#${ganadorSeleccionado.numeroPedido}`;
+            
+            setTimeout(() => {
+                girarRuleta();
+            }, 1000);
+        }
+
+        // Girar Ruleta
+        function girarRuleta() {
+            crearRuleta();
+            document.getElementById('ruletaContainer').style.display = 'block';
+
+            const ruletaEl = document.getElementById('ruleta');
+            const premioIndex = Math.floor(Math.random() * premios.length);
+            const grados = (premioIndex * (360 / premios.length)) + 3600 + (Math.random() * 60 - 30);
+
+            setTimeout(() => {
+                ruletaEl.style.transform = `rotate(${grados}deg)`;
+            }, 100);
+
+            setTimeout(() => {
+                mostrarGanador(premios[premioIndex]);
+            }, 3500);
+        }
+
+        // Crear Ruleta Visual
+        function crearRuleta() {
+            const ruleta = document.getElementById('ruleta');
+            ruleta.innerHTML = '';
+
+            const colores = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F'];
+            const anguloBase = 360 / premios.length;
+
+            premios.forEach((premio, index) => {
+                const slice = document.createElement('div');
+                slice.className = 'ruleta-slice';
+                slice.style.background = colores[index % colores.length];
+                slice.style.transform = `rotate(${index * anguloBase}deg) skewY(-${90 - anguloBase}deg)`;
+                
+                // Texto del premio
+                const texto = document.createElement('div');
+                texto.style.position = 'absolute';
+                texto.style.top = '20%';
+                texto.style.left = '50%';
+                texto.style.transform = `translateX(-50%) rotate(${anguloBase/2}deg)`;
+                texto.style.color = 'white';
+                texto.style.fontWeight = 'bold';
+                texto.style.fontSize = '14px';
+                texto.style.textAlign = 'center';
+                texto.textContent = premio;
+                slice.appendChild(texto);
+                
+                ruleta.appendChild(slice);
+            });
+
+            // Centro de la ruleta
+            const centro = document.createElement('div');
+            centro.style.position = 'absolute';
+            centro.style.top = '50%';
+            centro.style.left = '50%';
+            centro.style.transform = 'translate(-50%, -50%)';
+            centro.style.width = '80px';
+            centro.style.height = '80px';
+            centro.style.background = 'white';
+            centro.style.borderRadius = '50%';
+            centro.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            centro.style.display = 'flex';
+            centro.style.alignItems = 'center';
+            centro.style.justifyContent = 'center';
+            centro.style.fontSize = '32px';
+            centro.textContent = '🎁';
+            ruleta.appendChild(centro);
+        }
+
+        // Mostrar Ganador Final
+        async function mostrarGanador(premio) {
+            lanzarConfeti();
+
+            document.getElementById('ganadorNumero').textContent = `#${ganadorSeleccionado.numeroPedido}`;
+            document.getElementById('ganadorPremio').textContent = premio;
+            document.getElementById('ganadorDisplay').classList.add('show');
+
+            // Registrar en Google Sheets
+            try {
+                const datos = {
+                    numeroPedidoGanador: ganadorSeleccionado.numeroPedido,
+                    premioGanado: premio,
+                    totalParticipantes: participantes.length,
+                    rangoFechas: document.getElementById('rangoFechas').textContent,
+                    premiosDisponibles: premios
+                };
+
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'registrarGanador',
+                        datos: datos
+                    })
+                });
+
+                console.log('✅ Ganador registrado');
+            } catch (error) {
+                console.error('Error registrando ganador:', error);
+            }
+
+            sorteoEnProceso = false;
+        }
+
+        // Confeti
+        function lanzarConfeti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const confettiPieces = [];
+            const confettiCount = 150;
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#667eea', '#764ba2'];
+
+            for (let i = 0; i < confettiCount; i++) {
+                confettiPieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * confettiCount,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.floor(Math.random() * 10) - 10,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                confettiPieces.forEach((piece, index) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = piece.r / 2;
+                    ctx.strokeStyle = piece.color;
+                    ctx.moveTo(piece.x + piece.tilt + piece.r / 4, piece.y);
+                    ctx.lineTo(piece.x + piece.tilt, piece.y + piece.tilt + piece.r / 4);
+                    ctx.stroke();
+
+                    piece.tiltAngle += piece.tiltAngleIncremental;
+                    piece.y += (Math.cos(piece.d) + 3 + piece.r / 2) / 2;
+                    piece.tilt = Math.sin(piece.tiltAngle - index / 3) * 15;
+
+                    if (piece.y > canvas.height) {
+                        confettiPieces.splice(index, 1);
+                    }
+                });
+
+                if (confettiPieces.length > 0) {
+                    requestAnimationFrame(draw);
+                }
+            }
+
+            draw();
+        }
+
+        // Inicializar fechas
+        window.addEventListener('DOMContentLoaded', () => {
+            const hoy = new Date();
+            const hace7dias = new Date();
+            hace7dias.setDate(hace7dias.getDate() - 7);
+
+            document.getElementById('fechaInicio').value = hace7dias.toISOString().split('T')[0];
+            document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>
